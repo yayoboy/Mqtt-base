@@ -1,0 +1,48 @@
+{
+  "name": "MqttTelemetryStorage",
+  "version": "1.0.0",
+  "description": "MQTT Telemetry Storage Library with SD card support and schema validation for ESP32, STM32, and RP2040",
+  "keywords": "mqtt, telemetry, iot, storage, sdcard, esp32, rp2040, pico",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yayoboy/Mqtt-base.git"
+  },
+  "authors": [
+    {
+      "name": "yayoboy",
+      "email": "esoglobine@gmail.com",
+      "maintainer": true
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/yayoboy/Mqtt-base",
+  "dependencies": {
+    "knolleary/PubSubClient": "^2.8",
+    "greiman/SdFat": "^2.2.2",
+    "bblanchon/ArduinoJson": "^6.21.3"
+  },
+  "frameworks": ["arduino", "espidf"],
+  "platforms": [
+    "espressif32",
+    "raspberrypi",
+    "ststm32",
+    "atmelsam"
+  ],
+  "examples": [
+    "examples/BasicUsage/BasicUsage.ino",
+    "examples/TemperatureSensor/TemperatureSensor.ino",
+    "examples/GpsTracker/GpsTracker.ino",
+    "examples/CustomSchema/CustomSchema.ino"
+  ],
+  "export": {
+    "include": [
+      "src",
+      "examples",
+      "library.json",
+      "library.properties",
+      "keywords.txt",
+      "README.md",
+      "LICENSE"
+    ]
+  }
+}
