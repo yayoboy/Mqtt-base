@@ -113,6 +113,11 @@ export class SQLiteBackend implements DatabaseBackend {
       params.push(options.limit);
     }
 
+    if (options.offset) {
+      sql += ' OFFSET ?';
+      params.push(options.offset);
+    }
+
     const stmt = this.db.prepare(sql);
     const rows = stmt.all(...params);
 
@@ -122,6 +127,38 @@ export class SQLiteBackend implements DatabaseBackend {
       timestamp: new Date(row.timestamp),
       receivedAt: new Date(row.received_at),
     }));
+  }
+
+  async cleanup(before: Date): Promise<number> {
+    try {
+      const stmt = this.db.prepare('DELETE FROM messages WHERE timestamp < ?');
+      const result = stmt.run(before.toISOString());
+      const deleted = result.changes || 0;
+      logger.info(`Cleaned up ${deleted} old messages`);
+      return deleted;
+    } catch (error) {
+      logger.error('Failed to cleanup old messages', error);
+      return 0;
+    }
+  }
+
+  async getStats(): Promise<any> {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT
+          COUNT(*) as total_messages,
+          COUNT(DISTINCT topic) as unique_topics,
+          MIN(timestamp) as oldest_message,
+          MAX(timestamp) as newest_message
+        FROM messages
+      `);
+
+      const stats = stmt.get();
+      return stats;
+    } catch (error) {
+      logger.error('Failed to get stats', error);
+      return null;
+    }
   }
 
   async close(): Promise<void> {

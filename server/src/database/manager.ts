@@ -19,6 +19,8 @@ export interface DatabaseBackend {
   store(message: any): Promise<boolean>;
   storeBatch(messages: any[]): Promise<boolean>;
   query(options: QueryOptions): Promise<any[]>;
+  cleanup?(before: Date): Promise<number>;
+  getStats?(): Promise<any>;
   close(): Promise<void>;
 }
 
@@ -72,6 +74,20 @@ export class DatabaseManager {
 
   async query(options: QueryOptions): Promise<any[]> {
     return this.backend.query(options);
+  }
+
+  async cleanup(before: Date): Promise<number> {
+    if (this.backend.cleanup) {
+      return this.backend.cleanup(before);
+    }
+    return 0;
+  }
+
+  async getStats(): Promise<any> {
+    if (this.backend.getStats) {
+      return this.backend.getStats();
+    }
+    return null;
   }
 
   async close(): Promise<void> {
