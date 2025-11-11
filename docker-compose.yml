@@ -1,0 +1,172 @@
+version: '3.8'
+
+services:
+  # MQTT Broker (Eclipse Mosquitto)
+  mqtt-broker:
+    image: eclipse-mosquitto:2.0
+    container_name: mqtt-broker
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    networks:
+      - mqtt-network
+    restart: unless-stopped
+
+  # PostgreSQL Database
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: mqtt-postgres
+    environment:
+      POSTGRES_DB: mqtt_telemetry
+      POSTGRES_USER: mqtt_user
+      POSTGRES_PASSWORD: mqtt_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - mqtt-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mqtt_user -d mqtt_telemetry"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # InfluxDB (Time-series database)
+  influxdb:
+    image: influxdb:2.7-alpine
+    container_name: mqtt-influxdb
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: adminpassword
+      DOCKER_INFLUXDB_INIT_ORG: mqtt-telemetry
+      DOCKER_INFLUXDB_INIT_BUCKET: telemetry
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: mqtt-telemetry-token-change-in-production
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+      - influxdb-config:/etc/influxdb2
+    networks:
+      - mqtt-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Raspberry Pi Version (Python)
+  raspberry-telemetry:
+    build:
+      context: ./raspberry
+      dockerfile: Dockerfile
+    container_name: mqtt-raspberry-telemetry
+    environment:
+      MQTT_BROKER: mqtt-broker
+      MQTT_PORT: 1883
+      DATABASE_TYPE: postgresql
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: mqtt_telemetry
+      POSTGRES_USER: mqtt_user
+      POSTGRES_PASSWORD: mqtt_password
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./raspberry/config.yaml:/app/config.yaml
+      - raspberry-data:/app/data
+    networks:
+      - mqtt-network
+    depends_on:
+      mqtt-broker:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Server Version (TypeScript/Node.js)
+  server-telemetry:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: mqtt-server-telemetry
+    environment:
+      NODE_ENV: production
+      MQTT_BROKER: mqtt://mqtt-broker:1883
+      DATABASE_PRIMARY: timescaledb
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: mqtt_telemetry
+      POSTGRES_USER: mqtt_user
+      POSTGRES_PASSWORD: mqtt_password
+      JWT_SECRET: change-this-secret-in-production
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./server/config.yaml:/app/config.yaml
+      - server-data:/app/data
+    networks:
+      - mqtt-network
+    depends_on:
+      mqtt-broker:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Prometheus (Monitoring)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: mqtt-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - mqtt-network
+    restart: unless-stopped
+
+  # Grafana (Visualization)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: mqtt-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_INSTALL_PLUGINS: grafana-clock-panel
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - mqtt-network
+    depends_on:
+      - prometheus
+      - postgres
+      - influxdb
+    restart: unless-stopped
+
+networks:
+  mqtt-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  influxdb-data:
+  influxdb-config:
+  raspberry-data:
+  server-data:
+  prometheus-data:
+  grafana-data:

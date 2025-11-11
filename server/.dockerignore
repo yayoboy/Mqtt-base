@@ -1,0 +1,58 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# TypeScript
+*.tsbuildinfo
+dist/
+build/
+
+# Web build (will be built in Docker)
+web/node_modules/
+web/dist/
+web/.vite/
+
+# Data
+data/
+*.db
+*.sqlite
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+docs/
+
+# Tests
+tests/
+test/
+*.test.ts
+*.spec.ts
+coverage/
+
+# Config (example will be copied)
+config.yaml
+!config.example.yaml
+
+# Development
+.env
+.env.local
