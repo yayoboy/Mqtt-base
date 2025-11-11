@@ -1,0 +1,33 @@
+[Unit]
+Description=MQTT Telemetry Storage Service
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/opt/mqtt-telemetry
+Environment="PATH=/opt/mqtt-telemetry/venv/bin"
+ExecStart=/opt/mqtt-telemetry/venv/bin/python -m mqtt_telemetry --config /etc/mqtt-telemetry/config.yaml
+Restart=always
+RestartSec=10
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/mqtt-telemetry /var/log/mqtt-telemetry /data
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=512
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mqtt-telemetry
+
+[Install]
+WantedBy=multi-user.target

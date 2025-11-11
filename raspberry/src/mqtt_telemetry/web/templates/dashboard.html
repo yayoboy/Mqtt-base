@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: #1e293b;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #60a5fa;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .status {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h3 {
+            color: #60a5fa;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #334155;
+        }
+
+        .stat:last-child {
+            border-bottom: none;
+        }
+
+        .stat-value {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        #messages {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #334155;
+            border-radius: 5px;
+            border-left: 3px solid #60a5fa;
+        }
+
+        .message-topic {
+            color: #60a5fa;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .message-time {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .message-data {
+            color: #e2e8f0;
+            font-family: monospace;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input, select, button {
+            padding: 10px 15px;
+            border: 1px solid #334155;
+            border-radius: 5px;
+            background: #1e293b;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        button {
+            background: #3b82f6;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        button:disabled {
+            background: #475569;
+            cursor: not-allowed;
+        }
+
+        .error {
+            color: #ef4444;
+            padding: 10px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #60a5fa;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 {{ title }}</h1>
+            <div class="status">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span id="mqtt-status">MQTT: Connected</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span id="ws-status">WebSocket: Connected</span>
+                </div>
+                <div class="status-item">
+                    <span id="uptime">Uptime: --</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h3>📊 Statistics</h3>
+                <div class="stat">
+                    <span>Messages Received</span>
+                    <span class="stat-value" id="msg-received">0</span>
+                </div>
+                <div class="stat">
+                    <span>Messages Stored</span>
+                    <span class="stat-value" id="msg-stored">0</span>
+                </div>
+                <div class="stat">
+                    <span>Validation Errors</span>
+                    <span class="stat-value" id="val-errors">0</span>
+                </div>
+                <div class="stat">
+                    <span>Buffer Usage</span>
+                    <span class="stat-value" id="buffer-usage">0%</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>💾 Storage</h3>
+                <div class="stat">
+                    <span>Backend</span>
+                    <span class="stat-value" id="storage-backend">SQLite</span>
+                </div>
+                <div class="stat">
+                    <span>Total Messages</span>
+                    <span class="stat-value" id="total-messages">0</span>
+                </div>
+                <div class="stat">
+                    <span>Database Size</span>
+                    <span class="stat-value" id="db-size">0 MB</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📋 Schemas</h3>
+                <div id="schemas-list">
+                    <div class="loading">Loading schemas...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🔴 Live Messages</h3>
+            <div class="controls">
+                <input type="text" id="topic-filter" placeholder="Filter by topic (e.g., sensors/+/temperature)" />
+                <button onclick="subscribeToTopic()">Subscribe</button>
+                <button onclick="clearMessages()">Clear</button>
+            </div>
+            <div id="messages">
+                <div class="loading">Waiting for messages...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ws;
+        let messageCount = 0;
+        const maxMessages = 100;
+
+        // Connect WebSocket
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
+
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                document.getElementById('ws-status').textContent = 'WebSocket: Connected';
+
+                // Subscribe to all messages by default
+                ws.send(JSON.stringify({
+                    type: 'subscribe',
+                    topics: ['#']
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'telemetry') {
+                    addMessage(data);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                document.getElementById('ws-status').textContent = 'WebSocket: Error';
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket disconnected, reconnecting...');
+                document.getElementById('ws-status').textContent = 'WebSocket: Reconnecting...';
+                setTimeout(connectWebSocket, 5000);
+            };
+        }
+
+        function addMessage(data) {
+            const messagesDiv = document.getElementById('messages');
+
+            // Remove loading message
+            const loading = messagesDiv.querySelector('.loading');
+            if (loading) loading.remove();
+
+            // Create message element
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message';
+            msgDiv.innerHTML = `
+                <div class="message-topic">${data.topic}</div>
+                <div class="message-time">${new Date(data.timestamp).toLocaleString()}</div>
+                <div class="message-data">${JSON.stringify(data.payload, null, 2)}</div>
+            `;
+
+            messagesDiv.insertBefore(msgDiv, messagesDiv.firstChild);
+
+            // Limit messages
+            messageCount++;
+            if (messageCount > maxMessages) {
+                messagesDiv.removeChild(messagesDiv.lastChild);
+                messageCount--;
+            }
+        }
+
+        function subscribeToTopic() {
+            const topic = document.getElementById('topic-filter').value || '#';
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'subscribe',
+                    topics: [topic]
+                }));
+                console.log('Subscribed to:', topic);
+            }
+        }
+
+        function clearMessages() {
+            document.getElementById('messages').innerHTML = '<div class="loading">Waiting for messages...</div>';
+            messageCount = 0;
+        }
+
+        // Fetch statistics
+        async function updateStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+
+                if (data.stats) {
+                    document.getElementById('msg-received').textContent =
+                        data.stats.messages_received || 0;
+                    document.getElementById('msg-stored').textContent =
+                        data.stats.messages_stored || 0;
+                    document.getElementById('val-errors').textContent =
+                        data.stats.validation_errors || 0;
+                    document.getElementById('uptime').textContent =
+                        `Uptime: ${formatUptime(data.stats.uptime || 0)}`;
+                }
+
+                if (data.buffer) {
+                    document.getElementById('buffer-usage').textContent =
+                        `${data.buffer.usage.toFixed(1)}%`;
+                }
+            } catch (error) {
+                console.error('Error fetching stats:', error);
+            }
+        }
+
+        // Fetch schemas
+        async function loadSchemas() {
+            try {
+                const response = await fetch('/api/schemas');
+                const data = await response.json();
+
+                const schemasList = document.getElementById('schemas-list');
+                schemasList.innerHTML = '';
+
+                if (data.schemas && data.schemas.length > 0) {
+                    data.schemas.forEach(schema => {
+                        const div = document.createElement('div');
+                        div.className = 'stat';
+                        div.innerHTML = `
+                            <span>${schema.name}</span>
+                            <span class="stat-value">v${schema.version}</span>
+                        `;
+                        schemasList.appendChild(div);
+                    });
+                } else {
+                    schemasList.innerHTML = '<div class="loading">No schemas loaded</div>';
+                }
+            } catch (error) {
+                console.error('Error loading schemas:', error);
+            }
+        }
+
+        function formatUptime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${hours}h ${minutes}m`;
+        }
+
+        // Initialize
+        connectWebSocket();
+        updateStats();
+        loadSchemas();
+
+        // Update stats every 5 seconds
+        setInterval(updateStats, 5000);
+    </script>
+</body>
+</html>

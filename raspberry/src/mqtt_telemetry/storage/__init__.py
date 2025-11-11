@@ -6,6 +6,7 @@ from .base import StorageBackend, StorageInfo
 from .sqlite import SQLiteStorage
 from .postgresql import PostgreSQLStorage
 from .filesystem import FilesystemStorage
+from .influxdb import InfluxDBStorage
 
 __all__ = [
     "StorageBackend",
@@ -13,6 +14,7 @@ __all__ = [
     "SQLiteStorage",
     "PostgreSQLStorage",
     "FilesystemStorage",
+    "InfluxDBStorage",
     "get_storage_backend",
 ]
 
@@ -22,7 +24,7 @@ def get_storage_backend(backend_type: str, config: dict) -> StorageBackend:
     Factory function to create storage backend
 
     Args:
-        backend_type: Type of backend (sqlite, postgresql, filesystem)
+        backend_type: Type of backend (sqlite, postgresql, filesystem, influxdb)
         config: Configuration dictionary
 
     Returns:
@@ -32,6 +34,7 @@ def get_storage_backend(backend_type: str, config: dict) -> StorageBackend:
         "sqlite": SQLiteStorage,
         "postgresql": PostgreSQLStorage,
         "filesystem": FilesystemStorage,
+        "influxdb": InfluxDBStorage,
     }
 
     backend_class = backends.get(backend_type.lower())
