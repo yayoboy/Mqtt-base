@@ -1,0 +1,467 @@
+================================================================================
+                     MQTT TELEMETRY GUI - FEATURE MATRIX
+================================================================================
+
+FEATURE COMPLETION STATUS & DEPENDENCIES
+(✓ = Implemented, ✗ = Missing, ◐ = Partial)
+
+================================================================================
+                            CORE FEATURES
+================================================================================
+
+┌─ DASHBOARD ─────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  STATUS: ◐ 15% Complete (Layout only, no data)                            │
+│                                                                              │
+│  ├─ Page Layout                              ✓ DONE                        │
+│  ├─ Tab Navigation                           ✓ DONE                        │
+│  │  ├─ Real-time Tab                         ◐ LAYOUT ONLY                 │
+│  │  ├─ History Tab                           ◐ PLACEHOLDER                 │
+│  │  └─ Analytics Tab                         ◐ PLACEHOLDER                 │
+│  │                                                                          │
+│  ├─ Statistics Cards (4 items)               ✗ MISSING (needs StatsCard) │
+│  │  ├─ Messages Received                     ✗ (hardcoded)                │
+│  │  ├─ Buffer Usage                          ✗ (hardcoded)                │
+│  │  ├─ MQTT Status                           ✗ (hardcoded)                │
+│  │  └─ Storage                               ✗ (hardcoded)                │
+│  │                                                                          │
+│  ├─ Real-time Chart                          ✗ MISSING (RealtimeChart)   │
+│  ├─ Historical Data Viewer                   ✗ MISSING                   │
+│  └─ Analytics Display                        ✗ MISSING                   │
+│                                                                              │
+│  DEPENDENCIES:                                                              │
+│    - StatsCard component        ✗                                          │
+│    - RealtimeChart component    ✗                                          │
+│    - API service (data.ts)      ✗                                          │
+│    - WebSocket integration      ✗                                          │
+│    - Zustand stores             ✗                                          │
+│    - Custom hooks               ✗                                          │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ SCHEMA MANAGEMENT ─────────────────────────────────────────────────────────┐
+│                                                                              │
+│  STATUS: ✗ 0% Complete (Component doesn't exist)                           │
+│                                                                              │
+│  ├─ Schema List View                         ✗ MISSING                    │
+│  │  ├─ Display all schemas                   ✗                            │
+│  │  ├─ Search/filter                         ✗                            │
+│  │  └─ Pagination                            ✗                            │
+│  │                                                                          │
+│  ├─ Schema CRUD Operations                   ✗ MISSING                    │
+│  │  ├─ Create new schema                     ✗                            │
+│  │  ├─ Edit schema                           ✗                            │
+│  │  ├─ Delete schema                         ✗                            │
+│  │  └─ Clone schema                          ✗                            │
+│  │                                                                          │
+│  ├─ Visual Schema Editor                     ✗ MISSING                    │
+│  │  ├─ Field name input                      ✗                            │
+│  │  ├─ Type selector (string/int/float...)   ✗                            │
+│  │  ├─ Constraints editor                    ✗                            │
+│  │  │  ├─ Min/max values                     ✗                            │
+│  │  │  ├─ String length                      ✗                            │
+│  │  │  ├─ Regex patterns                     ✗                            │
+│  │  │  └─ Enum values                        ✗                            │
+│  │  ├─ Required toggle                       ✗                            │
+│  │  └─ Default values                        ✗                            │
+│  │                                                                          │
+│  ├─ Import/Export                            ✗ MISSING                    │
+│  │  ├─ Import from JSON                      ✗                            │
+│  │  ├─ Import from YAML                      ✗                            │
+│  │  ├─ Export to JSON                        ✗                            │
+│  │  └─ Export to YAML                        ✗                            │
+│  │                                                                          │
+│  ├─ Live Preview                             ✗ MISSING                    │
+│  └─ Validation Display                       ✗ MISSING                    │
+│                                                                              │
+│  DEPENDENCIES:                                                              │
+│    - SchemaManager component    ✗                                          │
+│    - API service (schema.ts)    ✗                                          │
+│    - Form components            ✗                                          │
+│    - Import/export utilities    ✗                                          │
+│    - Type definitions           ✗                                          │
+│    - Form validation library    ✗                                          │
+│                                                                              │
+│  PRIORITY: HIGH (Core Feature)                                             │
+│  ESTIMATED LINES: 1000-1200                                                │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ DATA EXPLORER ─────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  STATUS: ✗ 0% Complete (Component doesn't exist)                           │
+│                                                                              │
+│  ├─ Query Builder                            ✗ MISSING                    │
+│  │  ├─ Date/time range picker                ✗                            │
+│  │  ├─ Topic filter with autocomplete        ✗                            │
+│  │  ├─ Advanced filter options                ✗                            │
+│  │  └─ Query reset/save                      ✗                            │
+│  │                                                                          │
+│  ├─ Results Display                          ✗ MISSING                    │
+│  │  ├─ Table view                            ✗                            │
+│  │  │  ├─ Sortable columns                   ✗                            │
+│  │  │  ├─ Resizable columns                  ✗                            │
+│  │  │  └─ Row selection                      ✗                            │
+│  │  ├─ Chart view                            ✗                            │
+│  │  └─ Toggle between views                  ✗                            │
+│  │                                                                          │
+│  ├─ Pagination & Search                      ✗ MISSING                    │
+│  │  ├─ Page navigation                       ✗                            │
+│  │  ├─ Results per page                      ✗                            │
+│  │  └─ Total results count                   ✗                            │
+│  │                                                                          │
+│  ├─ Data Export                              ✗ MISSING                    │
+│  │  ├─ Export format selector                ✗                            │
+│  │  │  ├─ CSV                                ✗                            │
+│  │  │  ├─ JSON                               ✗                            │
+│  │  │  └─ Excel                              ✗                            │
+│  │  └─ Download button                       ✗                            │
+│  │                                                                          │
+│  ├─ Real-time Updates                        ✗ MISSING                    │
+│  └─ Query History                            ✗ MISSING                    │
+│                                                                              │
+│  DEPENDENCIES:                                                              │
+│    - DataExplorer component     ✗                                          │
+│    - API service (data.ts)      ✗                                          │
+│    - Table component            ✗                                          │
+│    - Date picker library        ✗                                          │
+│    - Export utilities           ✗                                          │
+│    - Zustand stores             ✗                                          │
+│                                                                              │
+│  PRIORITY: HIGH (Core Feature)                                             │
+│  ESTIMATED LINES: 800-1000                                                 │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ SETTINGS/CONFIGURATION ────────────────────────────────────────────────────┐
+│                                                                              │
+│  STATUS: ✗ 0% Complete (Component doesn't exist)                           │
+│                                                                              │
+│  ├─ MQTT Connection Settings                 ✗ MISSING                    │
+│  │  ├─ Broker address input                  ✗                            │
+│  │  ├─ Port input                            ✗                            │
+│  │  ├─ Username/password                     ✗                            │
+│  │  ├─ TLS/SSL toggle                        ✗                            │
+│  │  ├─ Keep-alive settings                   ✗                            │
+│  │  └─ Connection test button                ✗                            │
+│  │                                                                          │
+│  ├─ Database Configuration                   ✗ MISSING                    │
+│  │  ├─ Database type selector                ✗                            │
+│  │  ├─ Connection string                     ✗                            │
+│  │  ├─ Database path (SQLite)                ✗                            │
+│  │  ├─ Connection pool settings              ✗                            │
+│  │  └─ Connection test button                ✗                            │
+│  │                                                                          │
+│  ├─ UI Preferences                           ✗ MISSING                    │
+│  │  ├─ Dark/light mode toggle                ✗                            │
+│  │  ├─ Auto-refresh interval                 ✗                            │
+│  │  ├─ Chart preferences                     ✗                            │
+│  │  └─ Language selection                    ✗                            │
+│  │                                                                          │
+│  ├─ API Configuration                        ✗ MISSING                    │
+│  │  ├─ API endpoint URL                      ✗                            │
+│  │  ├─ API key management                    ✗                            │
+│  │  ├─ WebSocket endpoint                    ✗                            │
+│  │  └─ Request timeout                       ✗                            │
+│  │                                                                          │
+│  ├─ Export Settings                          ✗ MISSING                    │
+│  │  ├─ Default export format                 ✗                            │
+│  │  └─ Export path                           ✗                            │
+│  │                                                                          │
+│  ├─ Application Settings                     ✗ MISSING                    │
+│  │  ├─ Auto-start toggle                     ✗                            │
+│  │  ├─ Log level selector                    ✗                            │
+│  │  ├─ Cache settings                        ✗                            │
+│  │  └─ About dialog                          ✗                            │
+│  │                                                                          │
+│  ├─ Apply/Cancel Buttons                     ✗ MISSING                    │
+│  └─ Settings Persistence                     ✗ MISSING                    │
+│                                                                              │
+│  DEPENDENCIES:                                                              │
+│    - Settings component         ✗                                          │
+│    - Form components & validation ✗                                        │
+│    - localStorage persistence   ✗                                          │
+│    - Connection testing utilities ✗                                        │
+│    - Zustand store (settings)   ✗                                          │
+│                                                                              │
+│  PRIORITY: HIGH (Required for basic operation)                             │
+│  ESTIMATED LINES: 500-700                                                  │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+                          SECONDARY FEATURES
+================================================================================
+
+┌─ REAL-TIME MONITORING ──────────────────────────────────────────────────────┐
+│                                                                              │
+│  STATUS: ✗ 0% Complete                                                     │
+│                                                                              │
+│  ├─ WebSocket Client                         ✗ MISSING                    │
+│  ├─ Real-time Data Streaming                 ✗ MISSING                    │
+│  ├─ Live Chart Updates                       ✗ MISSING                    │
+│  ├─ Connection Status Indicator              ✗ MISSING                    │
+│  └─ Auto-reconnection Logic                  ✗ MISSING                    │
+│                                                                              │
+│  ESTIMATED LINES: 400-500                                                  │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ DATA EXPORT/IMPORT ────────────────────────────────────────────────────────┐
+│                                                                              │
+│  STATUS: ✗ 0% Complete                                                     │
+│                                                                              │
+│  ├─ CSV Export                               ✗ MISSING                    │
+│  ├─ JSON Export                              ✗ MISSING                    │
+│  ├─ Excel Export                             ✗ MISSING                    │
+│  ├─ Schema Import Dialog                     ✗ MISSING                    │
+│  ├─ File Upload Handling                     ✗ MISSING                    │
+│  ├─ Progress Indicator                       ✗ MISSING                    │
+│  └─ Error Messages                           ✗ MISSING                    │
+│                                                                              │
+│  ESTIMATED LINES: 300-400                                                  │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ ANALYTICS & REPORTING ─────────────────────────────────────────────────────┐
+│                                                                              │
+│  STATUS: ✗ 0% Complete                                                     │
+│                                                                              │
+│  ├─ Statistical Calculations                 ✗ MISSING                    │
+│  ├─ Message Rate Graph                       ✗ MISSING                    │
+│  ├─ Top Topics Display                       ✗ MISSING                    │
+│  ├─ Error Rate Chart                         ✗ MISSING                    │
+│  ├─ Aggregation Options                      ✗ MISSING                    │
+│  └─ Report Generation                        ✗ MISSING                    │
+│                                                                              │
+│  ESTIMATED LINES: 500-700                                                  │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+                         INFRASTRUCTURE & SERVICES
+================================================================================
+
+┌─ ENTRY POINT ───────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  src/main.tsx                                ✗ MISSING (CRITICAL)         │
+│                                                                              │
+│  Purpose: React application entry point                                    │
+│  Content needed:                                                           │
+│    - React.createRoot()                      ✗                            │
+│    - App component mounting                  ✗                            │
+│    - CSS imports                             ✗                            │
+│    - Error boundaries                        ✗                            │
+│    - Store initialization                    ✗                            │
+│                                                                              │
+│  IMPACT: App cannot start without this                                     │
+│  ESTIMATED LINES: 50                                                       │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ API SERVICE LAYER ─────────────────────────────────────────────────────────┐
+│                                                                              │
+│  STATUS: ✗ 0% Complete (No service files exist)                            │
+│                                                                              │
+│  src/services/                               ✗ MISSING                    │
+│  ├─ api.ts (Axios configuration)             ✗ 150 lines needed           │
+│  ├─ data.ts (Data query endpoints)           ✗ 80 lines needed            │
+│  ├─ schema.ts (Schema CRUD)                  ✗ 80 lines needed            │
+│  ├─ stats.ts (Statistics endpoints)          ✗ 50 lines needed            │
+│  ├─ mqtt.ts (MQTT operations)                ✗ 100 lines needed           │
+│  └─ websocket.ts (Real-time connection)      ✗ 100 lines needed           │
+│                                                                              │
+│  TOTAL LINES: 550-600                                                      │
+│  DEPENDENCIES: axios, WebSocket API                                        │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ STATE MANAGEMENT (ZUSTAND) ────────────────────────────────────────────────┐
+│                                                                              │
+│  STATUS: ✗ 0% Complete (Package installed but not used)                    │
+│                                                                              │
+│  src/stores/                                 ✗ MISSING                    │
+│  ├─ mqtt.ts (MQTT connection state)          ✗ 80 lines needed            │
+│  ├─ data.ts (Query results & filters)        ✗ 100 lines needed           │
+│  ├─ schemas.ts (Loaded schemas cache)        ✗ 80 lines needed            │
+│  ├─ settings.ts (User preferences)           ✗ 60 lines needed            │
+│  ├─ realtime.ts (WebSocket data)             ✗ 70 lines needed            │
+│  └─ ui.ts (UI state & notifications)         ✗ 60 lines needed            │
+│                                                                              │
+│  TOTAL LINES: 450-500                                                      │
+│  DEPENDENCIES: zustand                                                     │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ CUSTOM HOOKS ──────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  STATUS: ✗ 0% Complete (No hooks directory)                                │
+│                                                                              │
+│  src/hooks/                                  ✗ MISSING                    │
+│  ├─ useMqtt.ts (MQTT connection state)       ✗ 100 lines needed           │
+│  ├─ useData.ts (Data query hook)             ✗ 100 lines needed           │
+│  ├─ useWebSocket.ts (Real-time updates)      ✗ 100 lines needed           │
+│  ├─ usePersistentSettings.ts (localStorage)  ✗ 80 lines needed            │
+│  └─ useApi.ts (API calls with error handling) ✗ 80 lines needed           │
+│                                                                              │
+│  TOTAL LINES: 460                                                          │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ TYPE DEFINITIONS ──────────────────────────────────────────────────────────┐
+│                                                                              │
+│  STATUS: ✗ 0% Complete (No types directory)                                │
+│                                                                              │
+│  src/types/                                  ✗ MISSING                    │
+│  ├─ api.ts (API response types)              ✗ 100 lines needed           │
+│  ├─ mqtt.ts (MQTT message types)             ✗ 80 lines needed            │
+│  ├─ schema.ts (Schema type definitions)      ✗ 80 lines needed            │
+│  ├─ common.ts (Common utility types)         ✗ 50 lines needed            │
+│  └─ index.ts (Barrel exports)                ✗ 20 lines needed            │
+│                                                                              │
+│  TOTAL LINES: 330                                                          │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ UTILITIES & HELPERS ───────────────────────────────────────────────────────┐
+│                                                                              │
+│  STATUS: ◐ Partially Complete (Only cn() utility exists)                  │
+│                                                                              │
+│  src/utils/                                  ✗ NEEDS EXPANSION             │
+│  ├─ export.ts (CSV/JSON export)              ✗ 150 lines needed           │
+│  ├─ import.ts (File import handling)         ✗ 100 lines needed           │
+│  ├─ logger.ts (Logging utility)              ✗ 50 lines needed            │
+│  ├─ validators.ts (Input validation)         ✗ 100 lines needed           │
+│  ├─ formatters.ts (Date/number formatting)   ✗ 100 lines needed           │
+│  └─ transformers.ts (Data transformation)    ✗ 80 lines needed            │
+│                                                                              │
+│  src/lib/                                    ✓ EXISTS                      │
+│  ├─ utils.ts (cn utility)                    ✓ 6 lines (DONE)             │
+│  └─ [add more as needed]                     ✗                            │
+│                                                                              │
+│  TOTAL LINES NEEDED: 580                                                   │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+                      COMPONENT DEPENDENCY GRAPH
+================================================================================
+
+App.tsx
+├── Header.tsx ✗
+│   └── MQTT Status Indicator (icon)
+│       └── useMqtt hook ✗
+├── Sidebar.tsx ✓
+└── Main Content Router
+    ├── Dashboard ◐
+    │   ├── StatsCard ✗
+    │   │   └── data from API ✗
+    │   └── RealtimeChart ✗
+    │       ├── recharts library ✓
+    │       ├── WebSocket connection ✗
+    │       └── useWebSocket hook ✗
+    │
+    ├── SchemaManager ✗
+    │   ├── Schema list
+    │   ├── Schema form builder
+    │   ├── Import/export dialogs
+    │   └── API calls (schema.ts) ✗
+    │
+    ├── DataExplorer ✗
+    │   ├── Query builder
+    │   ├── Results table
+    │   ├── Export functionality
+    │   └── API calls (data.ts) ✗
+    │
+    └── Settings ✗
+        ├── MQTT settings form
+        ├── Database settings form
+        ├── UI preferences
+        ├─── Application settings
+        └── localStorage persistence ✗
+
+================================================================================
+                         OVERALL COMPLETION %
+================================================================================
+
+Component Layer:              15% (3/9 components)
+├─ Implemented:              Dashboard layout, Sidebar, Card UI
+├─ Missing:                  Header, SchemaManager, DataExplorer, Settings,
+│                           RealtimeChart, StatsCard
+└─ In Progress:             Main app structure
+
+Service Layer:                0% (0/6 services)
+├─ Missing:                  api.ts, data.ts, schema.ts, stats.ts,
+│                           mqtt.ts, websocket.ts
+└─ Impact:                  NO API COMMUNICATION
+
+State Management:             0% (0/6 stores)
+├─ Missing:                  mqtt, data, schemas, settings, realtime, ui
+└─ Impact:                  NO STATE SHARING
+
+Type Safety:                  0% (0 type files)
+├─ Missing:                  All TypeScript type definitions
+└─ Impact:                  POOR TYPE SAFETY
+
+Infrastructure:              50%
+├─ Build system:             ✓ Vite configured
+├─ Styling:                  ✓ Tailwind + dark mode
+├─ Entry point:              ✗ main.tsx missing
+├─ Error handling:           ✗ No error boundaries
+└─ Testing:                  ✗ No test setup
+
+Documentation:               0%
+├─ Inline comments:          Minimal
+├─ Type documentation:       None
+├─ API documentation:        None
+└─ Component documentation:  None
+
+Testing:                      0%
+├─ Unit tests:               0 files
+├─ Integration tests:        0 files
+├─ E2E tests:                0 files
+└─ Coverage:                 0%
+
+TOTAL COMPLETION:            ~12-15%
+
+================================================================================
+                            EFFORT BREAKDOWN
+================================================================================
+
+COMPONENTS:                                              ~2,200 lines
+  ├─ Main (main.tsx, Header, Fixes)               ~400 lines
+  ├─ Dashboard (Stats, Chart)                      ~500 lines
+  ├─ SchemaManager (full CRUD)                    ~1000 lines
+  ├─ DataExplorer (query + export)                 ~800 lines
+  ├─ Settings (config forms)                       ~500 lines
+
+SERVICES & INFRASTRUCTURE:                              ~2,000 lines
+  ├─ API service layer                             ~600 lines
+  ├─ Zustand stores                                ~500 lines
+  ├─ Custom hooks                                  ~460 lines
+  ├─ Type definitions                              ~330 lines
+  ├─ Utilities & formatters                        ~580 lines
+  └─ UI components (from Radix)                    ~200 lines (docs)
+
+FEATURES:                                                ~1,500 lines
+  ├─ Real-time monitoring                          ~400 lines
+  ├─ Data export/import                            ~350 lines
+  ├─ Analytics                                      ~600 lines
+  ├─ Error handling & boundaries                    ~150 lines
+
+TESTING:                                                 ~500+ lines
+  ├─ Unit tests                                    ~300 lines
+  ├─ Integration tests                             ~200 lines
+
+DOCUMENTATION:                                          ~300 lines
+  ├─ Inline comments                               ~100 lines
+  ├─ Type docs                                      ~100 lines
+  ├─ README updates                                 ~100 lines
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TOTAL LINES NEEDED:                                    ~6,500 lines
+ESTIMATED TIME (full-time):                            4-6 weeks
+TEAM CAPACITY (2 developers):                          2-3 weeks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+================================================================================
