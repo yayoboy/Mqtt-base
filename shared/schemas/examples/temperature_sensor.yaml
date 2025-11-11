@@ -1,0 +1,76 @@
+name: temperature_sensor
+version: 1.0.0
+description: Temperature and humidity sensor telemetry
+topic_pattern: sensors/+/temperature
+format: json
+
+fields:
+  - name: device_id
+    type: string
+    required: true
+    description: Unique device identifier
+    validation:
+      pattern: "^[A-Z0-9]{8}$"
+
+  - name: temperature
+    type: float
+    required: true
+    unit: celsius
+    description: Temperature reading
+    validation:
+      min: -50
+      max: 100
+
+  - name: humidity
+    type: float
+    required: false
+    unit: percent
+    description: Relative humidity
+    validation:
+      min: 0
+      max: 100
+
+  - name: timestamp
+    type: timestamp
+    required: true
+    auto_fill: true
+    description: Measurement timestamp
+
+  - name: battery_level
+    type: integer
+    required: false
+    unit: percent
+    validation:
+      min: 0
+      max: 100
+
+computed_fields:
+  - name: temperature_fahrenheit
+    type: float
+    expression: "(temperature * 9/5) + 32"
+    description: Temperature in Fahrenheit
+
+  - name: heat_index
+    type: float
+    expression: "temperature + (0.5 * humidity / 100 * (temperature - 14.4))"
+    description: Calculated heat index
+
+storage:
+  table: temperature_readings
+  retention: 90d
+  compression: true
+  index:
+    - device_id
+    - timestamp
+  aggregations:
+    - interval: 5m
+      functions: [avg, min, max]
+    - interval: 1h
+      functions: [avg, min, max, stddev]
+    - interval: 1d
+      functions: [avg, min, max, stddev]
+
+validation:
+  strict: true
+  allow_extra_fields: false
+  coerce_types: true

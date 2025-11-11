@@ -1,0 +1,128 @@
+mqtt:
+  broker: broker.example.com
+  port: 1883
+  username: ""
+  password: ""
+  client_id: raspberry-telemetry
+  keepalive: 60
+  qos: 1
+  tls:
+    enabled: false
+    ca_certs: ""
+    certfile: ""
+    keyfile: ""
+  topics:
+    - sensors/+/temperature
+    - vehicles/+/gps
+    - energy/+/readings
+
+storage:
+  backend: sqlite  # sqlite, postgresql, filesystem
+
+  # SQLite configuration
+  sqlite:
+    path: /data/telemetry.db
+    journal_mode: WAL
+    synchronous: NORMAL
+
+  # PostgreSQL configuration
+  postgresql:
+    host: localhost
+    port: 5432
+    database: telemetry
+    username: telemetry_user
+    password: ""
+    pool_size: 10
+
+  # Filesystem configuration
+  filesystem:
+    base_path: /mnt/usb/telemetry
+    file_format: jsonl  # jsonl, json, csv
+    compression: gzip  # none, gzip, zstd, lz4
+    max_file_size_mb: 100
+    rotation: daily  # hourly, daily, size
+
+  # Retention policy
+  retention:
+    enabled: true
+    days: 90
+    aggregation:
+      enabled: true
+      intervals:
+        - 5m
+        - 1h
+        - 1d
+
+schema:
+  path: ../shared/schemas
+  validation_enabled: true
+  strict_mode: false
+  auto_discovery: true
+  cache_enabled: true
+
+buffer:
+  size: 10000
+  flush_interval_sec: 5
+  batch_size: 100
+  high_water_mark: 8000
+
+web:
+  enabled: true
+  host: 0.0.0.0
+  port: 8080
+  cors_enabled: true
+  cors_origins:
+    - "*"
+  api:
+    enabled: true
+    rate_limit: 100  # requests per minute
+  websocket:
+    enabled: true
+    max_connections: 50
+
+security:
+  encryption:
+    enabled: false
+    algorithm: AES-256-GCM
+    key_file: /etc/mqtt-telemetry/encryption.key
+
+  authentication:
+    enabled: false
+    type: basic  # basic, jwt, oauth2
+    users:
+      - username: admin
+        password_hash: ""
+        role: admin
+
+  api_keys:
+    enabled: false
+    keys: []
+
+monitoring:
+  prometheus:
+    enabled: true
+    port: 9090
+
+  health_check:
+    enabled: true
+    interval_sec: 30
+
+  alerts:
+    enabled: true
+    disk_space_threshold_percent: 90
+    memory_threshold_percent: 85
+    buffer_threshold_percent: 90
+
+logging:
+  level: INFO  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: /var/log/mqtt-telemetry.log
+  max_size_mb: 100
+  backup_count: 5
+  console: true
+
+performance:
+  worker_threads: 4
+  async_workers: 10
+  connection_pool_size: 20
+  max_queue_size: 50000

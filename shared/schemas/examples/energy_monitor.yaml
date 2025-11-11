@@ -1,0 +1,96 @@
+name: energy_monitor
+version: 1.0.0
+description: Energy consumption monitoring
+topic_pattern: energy/+/readings
+format: json
+
+fields:
+  - name: meter_id
+    type: string
+    required: true
+    description: Energy meter identifier
+
+  - name: voltage
+    type: float
+    required: true
+    unit: volt
+    validation:
+      min: 0
+      max: 500
+
+  - name: current
+    type: float
+    required: true
+    unit: ampere
+    validation:
+      min: 0
+      max: 1000
+
+  - name: power
+    type: float
+    required: true
+    unit: watt
+    validation:
+      min: 0
+
+  - name: energy
+    type: float
+    required: true
+    unit: kwh
+    description: Cumulative energy consumption
+
+  - name: power_factor
+    type: float
+    required: false
+    validation:
+      min: 0
+      max: 1
+
+  - name: frequency
+    type: float
+    required: false
+    unit: hz
+    validation:
+      min: 45
+      max: 65
+
+  - name: timestamp
+    type: timestamp
+    required: true
+    auto_fill: true
+
+computed_fields:
+  - name: apparent_power
+    type: float
+    expression: "voltage * current"
+    description: Apparent power in VA
+
+  - name: reactive_power
+    type: float
+    expression: "sqrt((voltage * current)^2 - power^2)"
+    description: Reactive power in VAR
+
+  - name: daily_cost
+    type: float
+    expression: "energy * 0.15"
+    description: Estimated daily cost (€0.15/kWh)
+
+storage:
+  table: energy_readings
+  retention: 365d
+  compression: true
+  index:
+    - meter_id
+    - timestamp
+  aggregations:
+    - interval: 15m
+      functions: [avg, min, max, sum]
+    - interval: 1h
+      functions: [avg, min, max, sum]
+    - interval: 1d
+      functions: [avg, min, max, sum]
+
+validation:
+  strict: true
+  allow_extra_fields: false
+  coerce_types: true

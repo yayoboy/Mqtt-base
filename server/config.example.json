@@ -1,0 +1,213 @@
+{
+  "mqtt": {
+    "broker": "mqtt://broker.example.com:1883",
+    "clientId": "telemetry-server",
+    "username": "",
+    "password": "",
+    "qos": 1,
+    "reconnectPeriod": 5000,
+    "topics": [
+      "sensors/+/temperature",
+      "vehicles/+/gps",
+      "energy/+/readings"
+    ],
+    "tls": {
+      "enabled": false,
+      "rejectUnauthorized": true,
+      "ca": "",
+      "cert": "",
+      "key": ""
+    }
+  },
+  "database": {
+    "primary": "timescaledb",
+    "postgresql": {
+      "host": "localhost",
+      "port": 5432,
+      "database": "telemetry",
+      "username": "telemetry_user",
+      "password": "",
+      "poolSize": 20,
+      "ssl": false
+    },
+    "timescaledb": {
+      "host": "localhost",
+      "port": 5432,
+      "database": "telemetry",
+      "username": "telemetry_user",
+      "password": "",
+      "poolSize": 20,
+      "compression": true,
+      "retentionDays": 365
+    },
+    "influxdb": {
+      "url": "http://localhost:8086",
+      "token": "",
+      "org": "telemetry",
+      "bucket": "telemetry",
+      "batchSize": 1000
+    },
+    "sqlite": {
+      "path": "./data/telemetry.db",
+      "journalMode": "WAL"
+    },
+    "redis": {
+      "host": "localhost",
+      "port": 6379,
+      "password": "",
+      "db": 0,
+      "ttl": 86400
+    }
+  },
+  "schema": {
+    "path": "../shared/schemas",
+    "validationEnabled": true,
+    "strictMode": false,
+    "autoDiscovery": true,
+    "cacheEnabled": true
+  },
+  "buffer": {
+    "size": 50000,
+    "flushInterval": 5000,
+    "batchSize": 500,
+    "highWaterMark": 40000,
+    "persistence": {
+      "enabled": true,
+      "path": "./data/buffer"
+    }
+  },
+  "api": {
+    "host": "0.0.0.0",
+    "port": 3000,
+    "cors": {
+      "enabled": true,
+      "origins": ["*"]
+    },
+    "rateLimit": {
+      "enabled": true,
+      "max": 100,
+      "timeWindow": 60000
+    },
+    "auth": {
+      "enabled": false,
+      "jwtSecret": "",
+      "jwtExpiry": "24h"
+    }
+  },
+  "graphql": {
+    "enabled": true,
+    "path": "/graphql",
+    "playground": true
+  },
+  "websocket": {
+    "enabled": true,
+    "path": "/ws",
+    "maxConnections": 1000,
+    "heartbeatInterval": 30000
+  },
+  "storage": {
+    "compression": {
+      "enabled": true,
+      "algorithm": "zstd",
+      "level": 3
+    },
+    "encryption": {
+      "enabled": false,
+      "algorithm": "aes-256-gcm",
+      "keyPath": "./keys/encryption.key"
+    }
+  },
+  "aggregation": {
+    "enabled": true,
+    "intervals": [
+      {
+        "duration": "5m",
+        "functions": ["avg", "min", "max", "count"]
+      },
+      {
+        "duration": "1h",
+        "functions": ["avg", "min", "max", "stddev", "sum"]
+      },
+      {
+        "duration": "1d",
+        "functions": ["avg", "min", "max", "stddev", "sum"]
+      }
+    ]
+  },
+  "retention": {
+    "enabled": true,
+    "policies": [
+      {
+        "name": "raw_data",
+        "duration": "90d",
+        "resolution": "raw"
+      },
+      {
+        "name": "aggregated_5m",
+        "duration": "365d",
+        "resolution": "5m"
+      },
+      {
+        "name": "aggregated_1h",
+        "duration": "3y",
+        "resolution": "1h"
+      }
+    ]
+  },
+  "monitoring": {
+    "prometheus": {
+      "enabled": true,
+      "port": 9090,
+      "path": "/metrics"
+    },
+    "healthCheck": {
+      "enabled": true,
+      "interval": 30000
+    },
+    "alerts": {
+      "enabled": true,
+      "channels": {
+        "email": {
+          "enabled": false,
+          "smtp": {},
+          "recipients": []
+        },
+        "webhook": {
+          "enabled": false,
+          "url": ""
+        }
+      },
+      "rules": [
+        {
+          "name": "high_buffer_usage",
+          "condition": "buffer_usage > 90",
+          "severity": "warning"
+        },
+        {
+          "name": "storage_full",
+          "condition": "storage_free < 10",
+          "severity": "critical"
+        }
+      ]
+    }
+  },
+  "logging": {
+    "level": "info",
+    "format": "json",
+    "destination": "./logs/telemetry.log",
+    "rotation": {
+      "enabled": true,
+      "maxSize": "100M",
+      "maxFiles": 10
+    }
+  },
+  "plugins": {
+    "enabled": true,
+    "path": "./plugins",
+    "autoload": true
+  },
+  "multiTenant": {
+    "enabled": false,
+    "isolation": "schema"
+  }
+}
