@@ -1,0 +1,72 @@
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.log
+
+# Build outputs
+*.o
+*.so
+*.a
+*.exe
+*.dll
+*.dylib
+out/
+target/
+cmake-build-*/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Data and logs
+data/
+logs/
+*.csv
+*.json.gz
+
+# Testing
+coverage/
+.pytest_cache/
+.coverage
+
+# Electron
+electron/dist/
+electron/out/
+electron/.next/
+
+# Temporary files
+tmp/
+temp/
+*.tmp

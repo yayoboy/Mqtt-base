@@ -1,0 +1,93 @@
+name: gps_tracker
+version: 2.0.0
+description: GPS tracking telemetry for vehicles
+topic_pattern: vehicles/+/gps
+format: json
+
+fields:
+  - name: vehicle_id
+    type: string
+    required: true
+    description: Vehicle identifier
+
+  - name: latitude
+    type: double
+    required: true
+    unit: degrees
+    validation:
+      min: -90
+      max: 90
+
+  - name: longitude
+    type: double
+    required: true
+    unit: degrees
+    validation:
+      min: -180
+      max: 180
+
+  - name: altitude
+    type: float
+    required: false
+    unit: meters
+
+  - name: speed
+    type: float
+    required: true
+    unit: km/h
+    validation:
+      min: 0
+      max: 300
+
+  - name: heading
+    type: float
+    required: false
+    unit: degrees
+    validation:
+      min: 0
+      max: 360
+
+  - name: satellites
+    type: integer
+    required: false
+    description: Number of GPS satellites
+
+  - name: accuracy
+    type: float
+    required: false
+    unit: meters
+    description: Position accuracy
+
+  - name: timestamp
+    type: timestamp
+    required: true
+    auto_fill: true
+
+computed_fields:
+  - name: speed_mph
+    type: float
+    expression: "speed * 0.621371"
+    description: Speed in miles per hour
+
+  - name: speed_ms
+    type: float
+    expression: "speed / 3.6"
+    description: Speed in meters per second
+
+storage:
+  table: gps_positions
+  retention: 180d
+  compression: true
+  index:
+    - vehicle_id
+    - timestamp
+  aggregations:
+    - interval: 1m
+      functions: [avg]
+    - interval: 5m
+      functions: [avg, max]
+
+validation:
+  strict: true
+  allow_extra_fields: true
+  coerce_types: true
